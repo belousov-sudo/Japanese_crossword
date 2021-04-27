@@ -1,7 +1,25 @@
 from tkinter import *
 
 
-def start():  # отрисовка меню
+def start():
+    FormMenu.title("Menu")
+    width, height = 400, 600
+    FormMenu.geometry(f'{width}x{height}+250+250')
+    FormMenu.resizable(False, False)
+
+    bg_wl.place(x=0, y=0)
+    bg_wl_2.place(x=-500, y=-500)
+
+    text_create.place(x=-500, y=-500)
+    name_entry.place(x=-500, y=-500)
+    size_x_entry.place(x=-500, y=-500)
+    size_y_entry.place(x=-500, y=-500)
+    text_x.place(x=-500, y=-500)
+    text_y.place(x=-500, y=-500)
+    text_name.place(x=-500, y=-500)
+
+    text_play.place(x=-500, y=-500)
+    
     playButton.place(x=150, y=200)
     createButton.place(x=150, y=300)
     helpButton.place(x=150, y=400)
@@ -9,17 +27,50 @@ def start():  # отрисовка меню
 
 
 def start_game():
-    global FormGame, form_game_point
+    global form_game_point
     form_game_point = 1
-    FormGame = Toplevel(FormMenu)
-    FormGame.title('Game')
-    FormGame.geometry(f'{width}x{height}+250+250')
-    FormGame.resizable(False, False)
-    FormGame.bind("<Key>", key_processing)
+    FormMenu.title("Play")
+    width, height = 400, 400
+    FormMenu.geometry(f'{width}x{height}+250+250')
+
+    bg_wl_2.place(x=0, y=0)  # заставка создания
+    
+    playButton.place(x=-500, y=-500)
+    createButton.place(x=-500, y=-500)
+    helpButton.place(x=-500, y=-500)
+    exitButton.place(x=-500, y=-500)
+
+    text_play.place(x=125, y=0)
+    
+    FormMenu.resizable(False, False)
 
 
 def start_create():
-    pass
+    global form_create_point
+    form_create_point = 1
+    FormMenu.title("Create")
+    width, height = 400, 400
+    FormMenu.geometry(f'{width}x{height}+250+250')
+
+    bg_wl_2.place(x=0, y=0)
+    
+    playButton.place(x=-500, y=-500)
+    createButton.place(x=-500, y=-500)
+    helpButton.place(x=-500, y=-500)
+    exitButton.place(x=-500, y=-500)
+
+    text_create.place(x=80, y=25)
+    text_create.configure(fg='White')
+    text_create.configure(text='Введите название вашего \n'
+                               'кроссворда и его размеры')
+    text_x.place(x=100, y=125)
+    text_y.place(x=100, y=150)
+    text_name.place(x=100, y=200)
+    size_x_entry.place(x=175, y=125)
+    size_y_entry.place(x=175, y=150)
+    name_entry.place(x=175, y=200)
+    
+    FormMenu.resizable(False, False)
 
 
 def get_help():
@@ -32,27 +83,70 @@ def get_help():
     FormHelp.bind("<Key>", key_processing)
 
     with open("help.txt", "r") as f:
-        text = Text(FormHelp, width=50, height=35, bg='LightPink1', fg='blue', font=('Calibri', 12), wrap=WORD)
+        text = Text(FormHelp, width=50, height=32, bg='LightPink1', fg='blue',
+                    font=('Calibri', 12), wrap=WORD)
         text.place(x=0, y=0)
         s = f.read()
         text.insert(END, s)
 
 
+def continue_creating():
+    if size_x_entry.get() == '':
+        text_create.configure(fg='Red')
+        text_create.configure(text='Введите количество столбцов.')
+    elif size_y_entry.get() == '':
+        text_create.configure(fg='Red')
+        text_create.configure(text='Введите количество строк.')
+    elif name_entry.get() == '':
+        text_create.configure(fg='Red')
+        text_create.configure(text='Введите название.')
+    elif int(size_x_entry.get()) > 20:
+        text_create.configure(fg='Red')
+        text_create.configure(text='Недопустимый размер. \n'
+                                   'столбцов не может быть больше 20.')
+    elif int(size_y_entry.get()) > 20:
+        text_create.configure(fg='Red')
+        text_create.configure(text='Недопустимый размер. \n'
+                                   'строк не может быть больше 20.')
+    elif int(size_x_entry.get()) % 5 != 0:
+        text_create.configure(fg='Red')
+        text_create.configure(text='Недопустимый размер. \n'
+                                   'Столбцы не кратны 5.')
+    elif int(size_y_entry.get()) % 5 != 0:
+        text_create.configure(fg='Red')
+        text_create.configure(text='Недопустимый размер. \n'
+                                   'Строки не кратны 5.')
+    else:
+        pass
+
+
 def key_processing(event):
     global menu
-    print(event.keycode)
     if menu:  # интересные проблемы с линуксом
         if event.keycode == 13 or event.keycode == 36:
-            start_game()
+            if form_create_point:  # если в меню режима редактирования
+                continue_creating()
+            elif form_game_point:  # если в меню игры
+                pass
+            else:
+                start_game()
         elif event.keycode == 67 or event.keycode == 54:
-            start_create()
+            if form_create_point:  # если в меню режима редактирования
+                pass
+            else:
+                start_create()
         elif event.keycode == 72 or event.keycode == 43:
-            get_help()
+            if form_create_point:  # если в меню режима редактирования
+                pass
+            else:
+                get_help()
         elif event.keycode == 27 or event.keycode == 9:
             if form_game_point:
                 exit_game()
             elif form_help_point:
                 exit_help()
+            elif form_create_point:
+                exit_create()
             else:
                 exit_menu()
     else:
@@ -66,14 +160,20 @@ def exit_menu():
 
 def exit_game():
     global form_game_point
-    FormGame.destroy()
     form_game_point = 0
+    start()
 
 
 def exit_help():
     global form_help_point
     FormHelp.destroy()
     form_help_point = 0
+
+
+def exit_create():
+    global form_create_point
+    form_create_point = 0
+    start()
 
 
 menu = False
@@ -93,13 +193,40 @@ bg_im = PhotoImage(file="bg.png")
 bg_wl = Label(FormMenu, image=bg_im)
 bg_wl.place(x=0, y=0)
 
-playButton = Button(FormMenu, text="Play[Enter]", font=('Calibri', 12), command=start_game)
+bg_im_2 = PhotoImage(file="bg_2.png")
+bg_wl_2 = Label(FormMenu, image=bg_im_2)
 
-createButton = Button(FormMenu, text="Create[C]", font=('Calibri', 12), command=start_create)
+playButton = Button(FormMenu, text="Play[Enter]", font=('Calibri', 12),
+                    command=start_game)  # виджеты в меню
+createButton = Button(FormMenu, text="Create[C]", font=('Calibri', 12),
+                      command=start_create)
+helpButton = Button(FormMenu, text="Help[H]", font=('Calibri', 12),
+                    command=get_help)
+exitButton = Button(FormMenu, text="Exit[Esc]", font=('Calibri', 12),
+                    command=exit_menu)
 
-helpButton = Button(FormMenu, text="Help[H]", font=('Calibri', 12), command=get_help)
+text_create = Label(FormMenu, text="", bg="Black", fg="White",
+                    font=("Candara", 15), width=0, height=3)  # виджеты в меню создания
+text_create.place(x=-500, y=-500)
+text_x = Label(FormMenu, text="Столбцов:", bg="Black", fg="White",
+               font=("Candara", 9), width=0, height=1)
+text_x.place(x=-500, y=-500)
+text_y = Label(FormMenu, text="Строк:", bg="Black", fg="White",
+               font=("Candara", 9), width=0, height=1)
+text_y.place(x=-500, y=-500)
+text_name = Label(FormMenu, text="Название:", bg="Black", fg="White",
+                  font=("Candara", 9), width=0, height=1)
+text_name.place(x=-500, y=-500)
+size_x_entry = Entry(FormMenu, width=5)
+size_x_entry.place(x=-500, y=-500)
+size_y_entry = Entry(FormMenu, width=5)
+size_y_entry.place(x=-500, y=-500)
+name_entry = Entry(FormMenu, width=15)
+name_entry.place(x=-500, y=-500)
 
-exitButton = Button(FormMenu, text="Exit[Esc]", font=('Calibri', 12), command=exit_menu)
+text_play = Label(FormMenu, text="Выберите уровень:", bg="Black", fg="White",
+                  font=("Candara", 15), width=0, height=3)  # виджеты в меню выбора игры
+text_play.place(x=-500, y=-500)
 
 FormMenu.bind("<Key>", key_processing)
 
