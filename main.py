@@ -1,4 +1,5 @@
 from tkinter import *
+import pickle
 
 
 def start():
@@ -19,6 +20,10 @@ def start():
     text_name.place(x=-500, y=-500)
 
     text_play.place(x=-500, y=-500)
+
+    confirmButton.place(x=-500, y=-500)
+    blackButton.place(x=-500, y=-500)
+    whiteButton.place(x=-500, y=-500)
     
     playButton.place(x=150, y=200)
     createButton.place(x=150, y=300)
@@ -40,12 +45,16 @@ def start_game():
     helpButton.place(x=-500, y=-500)
     exitButton.place(x=-500, y=-500)
 
+    confirmButton.place(x=-500, y=-500)
+    blackButton.place(x=-500, y=-500)
+    whiteButton.place(x=-500, y=-500)
+
     text_play.place(x=125, y=0)
     
     FormMenu.resizable(False, False)
 
 
-def start_create():
+def start_creating():
     global form_create_point
     form_create_point = 1
     FormMenu.title("Create")
@@ -59,6 +68,10 @@ def start_create():
     helpButton.place(x=-500, y=-500)
     exitButton.place(x=-500, y=-500)
 
+    confirmButton.place(x=-500, y=-500)
+    blackButton.place(x=-500, y=-500)
+    whiteButton.place(x=-500, y=-500)
+
     text_create.place(x=80, y=25)
     text_create.configure(fg='White')
     text_create.configure(text='Введите название вашего \n'
@@ -71,6 +84,82 @@ def start_create():
     name_entry.place(x=175, y=200)
     
     FormMenu.resizable(False, False)
+
+
+def continue_creating():
+    try:
+        if size_x_entry.get() == '':
+            text_create.configure(fg='Red')
+            text_create.configure(text='Введите количество столбцов.')
+        elif size_y_entry.get() == '':
+            text_create.configure(fg='Red')
+            text_create.configure(text='Введите количество строк.')
+        elif name_entry.get() == '':
+            text_create.configure(fg='Red')
+            text_create.configure(text='Введите название.')
+        elif int(size_x_entry.get()) > 20:
+            text_create.configure(fg='Red')
+            text_create.configure(text='Недопустимый размер. \n'
+                                       'столбцов не может быть больше 20.')
+        elif int(size_y_entry.get()) > 20:
+            text_create.configure(fg='Red')
+            text_create.configure(text='Недопустимый размер. \n'
+                                       'строк не может быть больше 20.')
+        elif int(size_x_entry.get()) % 5 != 0:
+            text_create.configure(fg='Red')
+            text_create.configure(text='Недопустимый размер. \n'
+                                       'Столбцы не кратны 5.')
+        elif int(size_y_entry.get()) % 5 != 0:
+            text_create.configure(fg='Red')
+            text_create.configure(text='Недопустимый размер. \n'
+                                       'Строки не кратны 5.')
+        else:
+            global cord_x, cord_y, x, crossword_name, board
+            crossword_name = name_entry.get()
+            FormMenu.title("Create")
+            width, height = int(size_x_entry.get()) * 50, \
+                            int(size_y_entry.get()) * 50 + 100
+            FormMenu.geometry(f'{width}x{height}+250+250')
+
+            bg_wl.place(x=-500, y=-500)
+            bg_wl_2.place(x=-500, y=-500)
+
+            text_create.place(x=-500, y=-500)
+            name_entry.place(x=-500, y=-500)
+            size_x_entry.place(x=-500, y=-500)
+            size_y_entry.place(x=-500, y=-500)
+            text_x.place(x=-500, y=-500)
+            text_y.place(x=-500, y=-500)
+            text_name.place(x=-500, y=-500)
+
+            text_play.place(x=-500, y=-500)
+
+            playButton.place(x=-500, y=-500)
+            createButton.place(x=-500, y=-500)
+            helpButton.place(x=-500, y=-500)
+            exitButton.place(x=-500, y=-500)
+
+            blackButton.place(x=2, y=height - 50)
+            whiteButton.place(x=52, y=height - 50)
+            confirmButton.place(x=width - 127, y=height - 50)
+
+            cord_x = int(size_x_entry.get())
+            cord_y = int(size_y_entry.get())
+            x = [[0 for i in range(cord_x)]
+                 for j in range(cord_y)]
+            board = [['white' for i in range(cord_x)]
+                     for j in range(cord_y)]
+            for j in range(cord_x):
+                for i in range(cord_y):
+                    x[i][j] = Button(FormMenu, bg='white', width=2, height=2,
+                                     command=lambda x=i, y=j: paint(x, y))
+                    x[i][j].place(x=j * 50, y=i * 50)
+
+            FormMenu.resizable(False, False)
+    except ValueError:
+        text_create.configure(fg='Red')
+        text_create.configure(text='Введены значения\n'
+                                   'недопустимого формата.')
 
 
 def get_help():
@@ -90,57 +179,30 @@ def get_help():
         text.insert(END, s)
 
 
-def continue_creating():
-    if size_x_entry.get() == '':
-        text_create.configure(fg='Red')
-        text_create.configure(text='Введите количество столбцов.')
-    elif size_y_entry.get() == '':
-        text_create.configure(fg='Red')
-        text_create.configure(text='Введите количество строк.')
-    elif name_entry.get() == '':
-        text_create.configure(fg='Red')
-        text_create.configure(text='Введите название.')
-    elif int(size_x_entry.get()) > 20:
-        text_create.configure(fg='Red')
-        text_create.configure(text='Недопустимый размер. \n'
-                                   'столбцов не может быть больше 20.')
-    elif int(size_y_entry.get()) > 20:
-        text_create.configure(fg='Red')
-        text_create.configure(text='Недопустимый размер. \n'
-                                   'строк не может быть больше 20.')
-    elif int(size_x_entry.get()) % 5 != 0:
-        text_create.configure(fg='Red')
-        text_create.configure(text='Недопустимый размер. \n'
-                                   'Столбцы не кратны 5.')
-    elif int(size_y_entry.get()) % 5 != 0:
-        text_create.configure(fg='Red')
-        text_create.configure(text='Недопустимый размер. \n'
-                                   'Строки не кратны 5.')
-    else:
-        pass
-
-
 def key_processing(event):
-    global menu
+    global menu, crossword_name
     if menu:  # интересные проблемы с линуксом
-        if event.keycode == 13 or event.keycode == 36:
+        if event.keycode == 13 or event.keycode == 36:  # enter
             if form_create_point:  # если в меню режима редактирования
-                continue_creating()
+                if crossword_name != '':
+                    save_crossword()
+                else:
+                    continue_creating()
             elif form_game_point:  # если в меню игры
                 pass
             else:
                 start_game()
-        elif event.keycode == 67 or event.keycode == 54:
+        elif event.keycode == 67 or event.keycode == 54:  # C
             if form_create_point:  # если в меню режима редактирования
                 pass
             else:
-                start_create()
-        elif event.keycode == 72 or event.keycode == 43:
+                start_creating()
+        elif event.keycode == 72 or event.keycode == 43:  # H
             if form_create_point:  # если в меню режима редактирования
                 pass
             else:
                 get_help()
-        elif event.keycode == 27 or event.keycode == 9:
+        elif event.keycode == 27 or event.keycode == 9:  # esc
             if form_game_point:
                 exit_game()
             elif form_help_point:
@@ -152,6 +214,25 @@ def key_processing(event):
     else:
         menu = True
         start()
+
+
+def change_color(color):
+    global paint_color
+    paint_color = color
+
+
+def paint(a, b):
+    global x, paint_color
+    x[a][b].configure(bg=paint_color)
+    board[a][b] = paint_color
+
+
+def save_crossword():
+    global crossword_name, board
+    tmp = []
+    cnt = 0
+    with open(f'{crossword_name}.pickle', 'wb') as f:
+        pickle.dump(board, f)
 
 
 def exit_menu():
@@ -171,8 +252,17 @@ def exit_help():
 
 
 def exit_create():
-    global form_create_point
+    global form_create_point, cord_x, cord_y, x, crossword_name, board
     form_create_point = 0
+    for j in range(cord_x):
+        for i in range(cord_y):
+            x[i][j].place(x=-500, y=-500)
+    cord_x = 0
+    cord_y = 0
+    x = [[0 for i in range(cord_x)]
+         for j in range(cord_y)]
+    board = 0
+    crossword_name = ''
     start()
 
 
@@ -181,6 +271,11 @@ menu = False
 form_game_point = 0
 form_help_point = 0
 form_create_point = 0
+form_create_2_point = 0
+
+paint_color = 'black'
+
+crossword_name = ''
 
 FormMenu = Tk()
 
@@ -199,7 +294,7 @@ bg_wl_2 = Label(FormMenu, image=bg_im_2)
 playButton = Button(FormMenu, text="Play[Enter]", font=('Calibri', 12),
                     command=start_game)  # виджеты в меню
 createButton = Button(FormMenu, text="Create[C]", font=('Calibri', 12),
-                      command=start_create)
+                      command=start_creating)
 helpButton = Button(FormMenu, text="Help[H]", font=('Calibri', 12),
                     command=get_help)
 exitButton = Button(FormMenu, text="Exit[Esc]", font=('Calibri', 12),
@@ -228,9 +323,49 @@ text_play = Label(FormMenu, text="Выберите уровень:", bg="Black",
                   font=("Candara", 15), width=0, height=3)  # виджеты в меню выбора игры
 text_play.place(x=-500, y=-500)
 
+confirmButton = Button(FormMenu, text="Confirm[Enter]", height=2,
+                       font=('Calibri', 12), command=save_crossword)
+blackButton = Button(FormMenu, bg='black', width=2, height=2,
+                     command=lambda x='black': change_color(x))
+whiteButton = Button(FormMenu, bg='white', width=2, height=2,
+                     command=lambda x='white': change_color(x))
+
+cord_x = 0
+cord_y = 0
+x = [[0 for i in range(cord_x)] for j in range(cord_y)]
+board = 0
+for i in range(cord_x):
+    for j in range(cord_y):
+        x[i][j] = Button(FormMenu, bg='white', width=2, height=2, command=exit_menu)
+        x[i][j].place(x=i * 50, y=j * 50)
+
 FormMenu.bind("<Key>", key_processing)
 
 FormMenu.mainloop()
+
+'''
+    with open(f'{crossword_name}.pickle', 'rb') as f:
+        x = pickle.load(f)
+    for i in x:
+        for j in i:
+            print(j, end=' ')
+        print()
+   '''
+
+'''
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if (board[i][j - 1] != 'white' and board[i][j] != 'white' and board[i][j - 1] == board[i][j]) or (cnt == 0 and board[i][j] != 'white'):
+                    cnt += 1
+                elif board[i][j] == 'white' and board[i][j] != board[i][j - 1] and j != 0:
+                    tmp.append(cnt)
+                    cnt = 0
+            tmp.append(cnt)
+            cnt = 0
+            f.write(' '.join([str(x) for x in tmp]))
+            f.write(' \n')
+            tmp = []
+'''
 
 '''
 def clicked2(): #Функция создания и работы второго окна
