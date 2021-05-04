@@ -1,5 +1,6 @@
 from tkinter import *
 import pickle
+import os
 
 
 def start():
@@ -24,6 +25,12 @@ def start():
     confirmButton.place(x=-500, y=-500)
     blackButton.place(x=-500, y=-500)
     whiteButton.place(x=-500, y=-500)
+    for i in range(len(choice_buttons)):
+        choice_buttons[i].place(x=-500, y=-500)
+
+    for i in range(len(play_buttons)):
+        for j in range(len(play_buttons[0])):
+            play_buttons[i][j].place(x=-500, y=-500)
     
     playButton.place(x=150, y=200)
     createButton.place(x=150, y=300)
@@ -32,24 +39,49 @@ def start():
 
 
 def start_game():
-    global form_game_point
+    global form_game_point, choice_buttons
     form_game_point = 1
+
+    files = []
+    for root, dirs, file_names in os.walk("levels"):
+        files += file_names
+    choice_buttons = [0 for i in range(len(files))]
+    for i in range(len(choice_buttons)):
+        choice_buttons[i] = Button(FormMenu, bg='white', width=13, height=2, text=files[i].split('.')[0],
+                                command=lambda x=files[i]: play(x))
+        choice_buttons[i].place(x=i % 5 * 100, y=i//5 * 50 + 100)
+    
     FormMenu.title("Play")
-    width, height = 400, 400
+    width, height = 500, 200 + len(files) // 5 * 50
     FormMenu.geometry(f'{width}x{height}+250+250')
 
-    bg_wl_2.place(x=0, y=0)  # заставка создания
+    bg_wl.place(x=-500, y=-500)
+    bg_wl_2.place(x=-500, y=-500)
+
+    text_create.place(x=-500, y=-500)
+    name_entry.place(x=-500, y=-500)
+    size_x_entry.place(x=-500, y=-500)
+    size_y_entry.place(x=-500, y=-500)
+    text_x.place(x=-500, y=-500)
+    text_y.place(x=-500, y=-500)
+    text_name.place(x=-500, y=-500)
+
+    text_play.place(x=-500, y=-500)
+
+    confirmButton.place(x=-500, y=-500)
+    blackButton.place(x=-500, y=-500)
+    whiteButton.place(x=-500, y=-500)
     
     playButton.place(x=-500, y=-500)
     createButton.place(x=-500, y=-500)
     helpButton.place(x=-500, y=-500)
     exitButton.place(x=-500, y=-500)
 
-    confirmButton.place(x=-500, y=-500)
-    blackButton.place(x=-500, y=-500)
-    whiteButton.place(x=-500, y=-500)
+    for i in range(len(play_buttons)):
+        for j in range(len(play_buttons[0])):
+            play_buttons[i][j].place(x=-500, y=-500)
 
-    text_play.place(x=125, y=0)
+    text_play.place(x=0, y=0)
     
     FormMenu.resizable(False, False)
 
@@ -71,6 +103,10 @@ def start_creating():
     confirmButton.place(x=-500, y=-500)
     blackButton.place(x=-500, y=-500)
     whiteButton.place(x=-500, y=-500)
+
+    for i in range(len(play_buttons)):
+        for j in range(len(play_buttons[0])):
+            play_buttons[i][j].place(x=-500, y=-500)
 
     text_create.place(x=80, y=25)
     text_create.configure(fg='White')
@@ -139,6 +175,10 @@ def continue_creating():
             helpButton.place(x=-500, y=-500)
             exitButton.place(x=-500, y=-500)
 
+            for i in range(len(play_buttons)):
+                for j in range(len(play_buttons[0])):
+                    play_buttons[i][j].place(x=-500, y=-500)
+
             blackButton.place(x=2, y=height - 50)
             whiteButton.place(x=52, y=height - 50)
             confirmButton.place(x=width - 127, y=height - 50)
@@ -151,7 +191,7 @@ def continue_creating():
                      for j in range(cord_y)]
             for j in range(cord_x):
                 for i in range(cord_y):
-                    x[i][j] = Button(FormMenu, bg='white', width=2, height=2,
+                    x[i][j] = Button(FormMenu, bg='white', width=5, height=2,
                                      command=lambda x=i, y=j: paint(x, y))
                     x[i][j].place(x=j * 50, y=i * 50)
 
@@ -177,6 +217,47 @@ def get_help():
         text.place(x=0, y=0)
         s = f.read()
         text.insert(END, s)
+
+
+def play(name):
+    global play_buttons
+    with open(f'levels/{name}', 'rb') as f:
+        play_board = pickle.load(f)
+    FormMenu.title("Play")
+    width, height = len(play_board[0]) * 50, len(play_board) * 50
+    FormMenu.geometry(f'{width}x{height}+250+250')
+    FormMenu.resizable(False, False)
+
+    bg_wl.place(x=-500, y=-500)
+    bg_wl_2.place(x=-500, y=-500)
+
+    text_create.place(x=-500, y=-500)
+    name_entry.place(x=-500, y=-500)
+    size_x_entry.place(x=-500, y=-500)
+    size_y_entry.place(x=-500, y=-500)
+    text_x.place(x=-500, y=-500)
+    text_y.place(x=-500, y=-500)
+    text_name.place(x=-500, y=-500)
+
+    text_play.place(x=-500, y=-500)
+
+    confirmButton.place(x=-500, y=-500)
+    blackButton.place(x=-500, y=-500)
+    whiteButton.place(x=-500, y=-500)
+    for i in range(len(choice_buttons)):
+        choice_buttons[i].place(x=-500, y=-500)
+    
+    playButton.place(x=-500, y=-500)
+    createButton.place(x=-500, y=-500)
+    helpButton.place(x=-500, y=-500)
+    exitButton.place(x=-500, y=-500)
+
+    play_buttons = [[0 for i in range(len(play_board[0]))] for j in range(len(play_board))]
+    for i in range(len(play_board)):
+        for j in range(len(play_board[0])):
+            play_buttons[i][j] = Button(FormMenu, bg=play_board[i][j], width=5, height=2)
+            play_buttons[i][j].place(x=j * 50, y=i * 50)
+
 
 
 def key_processing(event):
@@ -231,7 +312,7 @@ def save_crossword():
     global crossword_name, board
     tmp = []
     cnt = 0
-    with open(f'{crossword_name}.pickle', 'wb') as f:
+    with open(f'levels/{crossword_name}.pickle', 'wb') as f:
         pickle.dump(board, f)
 
 
@@ -325,9 +406,9 @@ text_play.place(x=-500, y=-500)
 
 confirmButton = Button(FormMenu, text="Confirm[Enter]", height=2,
                        font=('Calibri', 12), command=save_crossword)
-blackButton = Button(FormMenu, bg='black', width=2, height=2,
+blackButton = Button(FormMenu, bg='black', width=5, height=2,
                      command=lambda x='black': change_color(x))
-whiteButton = Button(FormMenu, bg='white', width=2, height=2,
+whiteButton = Button(FormMenu, bg='white', width=5, height=2,
                      command=lambda x='white': change_color(x))
 
 cord_x = 0
@@ -338,6 +419,9 @@ for i in range(cord_x):
     for j in range(cord_y):
         x[i][j] = Button(FormMenu, bg='white', width=2, height=2, command=exit_menu)
         x[i][j].place(x=i * 50, y=j * 50)
+
+choice_buttons = []
+play_buttons = []
 
 FormMenu.bind("<Key>", key_processing)
 
@@ -350,7 +434,7 @@ FormMenu.mainloop()
         for j in i:
             print(j, end=' ')
         print()
-   '''
+'''
 
 '''
         for i in range(len(board)):
